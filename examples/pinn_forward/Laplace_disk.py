@@ -25,7 +25,7 @@ geom = dde.geometry.Rectangle(xmin=[0, 0], xmax=[1, 2 * np.pi])
 bc_rad = dde.icbc.DirichletBC(
     geom,
     lambda x: np.cos(x[:, 1:2]),
-    lambda x, on_boundary: on_boundary and np.isclose(x[0], 1),
+    lambda x, on_boundary: on_boundary and dde.utils.isclose(x[0], 1),
 )
 data = dde.data.PDE(
     geom, pde, bc_rad, num_domain=2540, num_boundary=80, solution=solution
@@ -47,7 +47,7 @@ def feature_transform(x):
 #     )
 # Backend paddle
 # def feature_transform(x):
-#     return paddle.cat(
+#     return paddle.concat(
 #         [x[:, 0:1] * paddle.sin(x[:, 1:2]), x[:, 0:1] * paddle.cos(x[:, 1:2])], axis=1
 #     )
 
