@@ -1,7 +1,6 @@
 __all__ = ["get", "is_external_optimizer"]
 
 import paddle
-from paddle.incubate.optimizer import LBFGS
 
 from ..config import LBFGS_options
 
@@ -20,7 +19,7 @@ def is_external_optimizer(optimizer):
     return optimizer in ["L-BFGS", "L-BFGS-B"]
 
 
-def get(params, optimizer, learning_rate=None, decay=None):
+def get(params, optimizer, learning_rate=None, decay=None, weight_decay=None):
     """Retrieves an Optimizer instance."""
     if isinstance(optimizer, paddle.optimizer.Optimizer):
         return optimizer
@@ -28,18 +27,20 @@ def get(params, optimizer, learning_rate=None, decay=None):
     if optimizer in ["L-BFGS", "L-BFGS-B"]:
         if learning_rate is not None or decay is not None:
             print("Warning: learning rate is ignored for {}".format(optimizer))
-        optim = LBFGS(
-            lr=1,
+        if weight_decay is not None:
+            raise ValueError("L-BFGS optimizer doesn't support weight_decay")
+        optim = paddle.optimizer.LBFGS(
+            learning_rate=1,
             max_iter=LBFGS_options["iter_per_step"],
             max_eval=LBFGS_options["fun_per_step"],
             tolerance_grad=LBFGS_options["gtol"],
             tolerance_change=LBFGS_options["ftol"],
             history_size=LBFGS_options["maxcor"],
-            line_search_fn='strong_wolfe',
+            line_search_fn=("strong_wolfe" if LBFGS_options["maxls"] > 0 else None),
             parameters=params,
         )
         return optim
-    
+
     if learning_rate is None:
         raise ValueError("No learning rate for {}.".format(optimizer))
 
@@ -47,5 +48,28 @@ def get(params, optimizer, learning_rate=None, decay=None):
         learning_rate = _get_lr_scheduler(learning_rate, decay)
 
     if optimizer == "adam":
-        return paddle.optimizer.Adam(learning_rate=learning_rate, parameters=params)
+        return paddle.optimizer.Adam(
+            learning_rate=learning_rate, parameters=params, weight_decay=weight_decay
+        )
+    if optimizer == "sgd":
+        return paddle.optimizer.SGD(
+            learning_rate=learning_rate, parameters=params, weight_decay=weight_decay
+        )
+    if optimizer == "rmsprop":
+        return paddle.optimizer.RMSProp(
+            learning_rate=learning_rate,
+            parameters=params,
+            weight_decay=weight_decay,
+        )
+    if optimizer == "adamw":
+        if (
+            not isinstance(weight_decay, paddle.regularizer.L2Decay)
+            or weight_decay._coeff == 0
+        ):
+            raise ValueError("AdamW optimizer requires non-zero L2 regularizer")
+        return paddle.optimizer.AdamW(
+            learning_rate=learning_rate,
+            parameters=params,
+            weight_decay=weight_decay._coeff,
+        )
     raise NotImplementedError(f"{optimizer} to be implemented for backend Paddle.")

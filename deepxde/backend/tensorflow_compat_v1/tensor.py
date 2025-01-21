@@ -81,6 +81,8 @@ def reshape(tensor, shape):
 
 
 def Variable(initial_value, dtype=None):
+    if dtype is None:
+        dtype = tf.keras.backend.floatx()
     return tf.Variable(initial_value=initial_value, trainable=True, dtype=dtype)
 
 
@@ -164,6 +166,15 @@ def square(x):
     return tf.math.square(x)
 
 
+# pylint: disable=redefined-builtin
+def abs(x):
+    return tf.math.abs(x)
+
+
+def minimum(x, y):
+    return tf.math.minimum(x, y)
+
+
 def tanh(x):
     return tf.math.tanh(x)
 
@@ -188,6 +199,32 @@ def reduce_sum(input_tensor):
     return tf.math.reduce_sum(input_tensor)
 
 
+def prod(input_tensor, dim, keepdims=False):
+    return tf.math.reduce_prod(input_tensor, axis=dim, keepdims=keepdims)
+
+
+def reduce_prod(input_tensor):
+    return tf.math.reduce_prod(input_tensor)
+
+
+# pylint: disable=redefined-builtin
+def min(input_tensor, dim, keepdims=False):
+    return tf.math.reduce_min(input_tensor, axis=dim, keepdims=keepdims)
+
+
+def reduce_min(input_tensor):
+    return tf.math.reduce_min(input_tensor)
+
+
+# pylint: disable=redefined-builtin
+def max(input_tensor, dim, keepdims=False):
+    return tf.math.reduce_max(input_tensor, axis=dim, keepdims=keepdims)
+
+
+def reduce_max(input_tensor):
+    return tf.math.reduce_max(input_tensor)
+
+
 def norm(tensor, ord=None, axis=None, keepdims=False):
     if ord is None:
         ord = "euclidean"
@@ -208,3 +245,15 @@ def matmul(x, y):
 
 def sparse_dense_matmul(x, y):
     return tf.sparse.sparse_dense_matmul(x, y)
+
+
+def l1_regularization(l1):
+    return tf.keras.regularizers.L1(l1=l1)
+
+
+def l2_regularization(l2):
+    return tf.keras.regularizers.L2(l2=l2)
+
+
+def l1_l2_regularization(l1, l2):
+    return tf.keras.regularizers.L1L2(l1=l1, l2=l2)

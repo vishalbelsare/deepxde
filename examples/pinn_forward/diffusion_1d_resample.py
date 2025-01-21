@@ -1,17 +1,23 @@
-"""Backend supported: tensorflow.compat.v1, tensorflow, pytorch, paddle"""
+"""Backend supported: tensorflow.compat.v1, tensorflow, pytorch, jax, paddle"""
 import deepxde as dde
 import numpy as np
 # Backend tensorflow.compat.v1 or tensorflow
 from deepxde.backend import tf
 # Backend pytorch
 # import torch
+# Backend jax
+# import jax.numpy as jnp
 # Backend paddle
 # import paddle
 
 
 def pde(x, y):
+    # Most backends
     dy_t = dde.grad.jacobian(y, x, i=0, j=1)
     dy_xx = dde.grad.hessian(y, x, i=0, j=0)
+    # Backend jax
+    # dy_t, _ = dde.grad.jacobian(y, x, i=0, j=1)
+    # dy_xx, _ = dde.grad.hessian(y, x, i=0, j=0)
     # Backend tensorflow.compat.v1 or tensorflow
     return (
         dy_t
@@ -25,6 +31,13 @@ def pde(x, y):
     #     - dy_xx
     #     + torch.exp(-x[:, 1:])
     #     * (torch.sin(np.pi * x[:, 0:1]) - np.pi ** 2 * torch.sin(np.pi * x[:, 0:1]))
+    # )
+    # Backend jax
+    # return (
+    #     dy_t
+    #     - dy_xx
+    #     + jnp.exp(-x[:, 1:])
+    #     * (jnp.sin(np.pi * x[..., 0:1]) - np.pi ** 2 * jnp.sin(np.pi * x[..., 0:1]))
     # )
     # Backend paddle
     # return (
@@ -64,7 +77,7 @@ net = dde.nn.FNN(layer_size, activation, initializer)
 
 model = dde.Model(data, net)
 
-resampler = dde.callbacks.PDEResidualResampler(period=100)
+resampler = dde.callbacks.PDEPointResampler(period=100)
 model.compile("adam", lr=0.001, metrics=["l2 relative error"])
 losshistory, train_state = model.train(iterations=2000, callbacks=[resampler])
 

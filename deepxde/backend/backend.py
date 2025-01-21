@@ -275,6 +275,10 @@ def relu(x):
     """Applies the rectified linear unit activation function."""
 
 
+def gelu(x):
+    """Computes Gaussian Error Linear Unit function."""
+
+
 def selu(x):
     """Computes scaled exponential linear."""
 
@@ -303,6 +307,14 @@ def exp(x):
 
 def square(x):
     """Returns the square of the elements of input."""
+
+
+def abs(x):
+    """Computes the absolute value element-wise."""
+
+
+def minimum(x, y):
+    """Returns the minimum of x and y (i.e. x < y ? x : y) element-wise."""
 
 
 def tanh(x):
@@ -343,6 +355,78 @@ def sum(input_tensor, dim, keepdims=False):
 
 def reduce_sum(input_tensor):
     """Returns the sum of all elements in the input tensor.
+
+    Args:
+        input_tensor (Tensor). The input tensor.
+
+    Returns:
+        Tensor.
+    """
+
+
+def prod(input_tensor, dim, keepdims=False):
+    """Returns the product of the input tensor along the given dim.
+
+    Args:
+        input_tensor (Tensor). The input tensor.
+        dim (int). The reduce dim.
+        keepdims (bool). Whether to keep the product dimension.
+
+    Returns:
+        Tensor: A framework-specific tensor.
+    """
+
+
+def reduce_prod(input_tensor):
+    """Returns the product of all elements in the input tensor.
+
+    Args:
+        input_tensor (Tensor). The input tensor.
+
+    Returns:
+        Tensor.
+    """
+
+
+def min(input_tensor, dim, keepdims=False):
+    """Returns the minimum of the input tensor along the given dim.
+
+    Args:
+        input_tensor (Tensor). The input tensor.
+        dim (int). The reduce dim.
+        keepdims (bool). Whether to keep the dimension.
+
+    Returns:
+        Tensor: A framework-specific tensor.
+    """
+
+
+def reduce_min(input_tensor):
+    """Returns the minimum of all elements in the input tensor.
+
+    Args:
+        input_tensor (Tensor). The input tensor.
+
+    Returns:
+        Tensor.
+    """
+
+
+def max(input_tensor, dim, keepdims=False):
+    """Returns the maximum of the input tensor along the given dim.
+
+    Args:
+        input_tensor (Tensor). The input tensor.
+        dim (int). The reduce dim.
+        keepdims (bool). Whether to keep the dimension.
+
+    Returns:
+        Tensor: A framework-specific tensor.
+    """
+
+
+def reduce_max(input_tensor):
+    """Returns the maximum of all elements in the input tensor.
 
     Args:
         input_tensor (Tensor). The input tensor.
@@ -417,4 +501,43 @@ def sparse_dense_matmul(x, y):
 
     Returns:
         Tensor: The multiplication result.
+    """
+
+
+###############################################################################
+# Regularization
+
+
+def l1_regularization(l1):
+    """A regularizer that applies a L1 regularization penalty or L1 weight decay.
+
+    Warning:
+        The implementation may vary across different backends.
+
+    Args:
+        l1 (float): L1 regularization factor. 
+    """
+
+
+def l2_regularization(l2):
+    """A regularizer that applies a L2 regularization penalty or L2 weight decay.
+
+    Warning:
+        The implementation may vary across different backends.
+
+    Args:
+        l2 (float): L2 regularization factor.
+    """
+
+
+def l1_l2_regularization(l1, l2):
+    """A regularizer that applies both L1 and L2 regularization penalties or 
+    L1 and L2 weight decay.
+
+    Warning:
+        The implementation may vary across different backends.
+
+    Args:
+        l1 (float): L1 regularization factor.
+        l2 (float): L2 regularization factor.
     """
